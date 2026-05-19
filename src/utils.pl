@@ -102,21 +102,60 @@ next_player(List, Current, Next) :-
 prev_player(List, Current, Prev) :-
     next_player(List, Prev, Current), !.
 
+%% =============================================================================
+%% Format Teks 
+%% =============================================================================
+ 
 %% format_kartu(+Kartu, -Teks)
 format_kartu(kartu(Warna, Jenis), Teks) :-
     term_to_atom(Jenis, JenisAtom),
     term_to_atom(Warna, WarnaAtom),
     atomic_list_concat([WarnaAtom, ' ', JenisAtom], Teks).
-
+ 
 %% format_list_kartu(+ListKartu, -ListTeks)
 format_list_kartu([], []).
 format_list_kartu([K|Ks], [T|Ts]) :-
     format_kartu(K, T),
     format_list_kartu(Ks, Ts).
-
+ 
 %% format_urutan(+ListNama, -Teks)  contoh: "P1 - P2 - P3"
 format_urutan([N], N) :- !.
 format_urutan([N|Ns], Teks) :-
     format_urutan(Ns, Rest),
     atomic_list_concat([N, ' - ', Rest], Teks).
-
+ 
+%% =============================================================================
+%% Predikat Kartu
+%% =============================================================================
+ 
+warna_valid(merah).
+warna_valid(kuning).
+warna_valid(hijau).
+warna_valid(biru).
+ 
+jenis_valid(J) :- integer(J), J >= 0, J =< 9.
+jenis_valid(skip).
+jenis_valid(reverse).
+jenis_valid(draw_two).
+jenis_valid(wild).
+jenis_valid(wild_draw_four).
+ 
+kartu_angka(kartu(W, J)) :-
+    warna_valid(W),
+    integer(J),
+    J >= 0, J =< 9.
+ 
+kartu_aksi(kartu(W, skip))     :- warna_valid(W).
+kartu_aksi(kartu(W, reverse))  :- warna_valid(W).
+kartu_aksi(kartu(W, draw_two)) :- warna_valid(W).
+ 
+kartu_hitam(kartu(hitam, wild)).
+kartu_hitam(kartu(hitam, wild_draw_four)).
+ 
+%% nilai_kartu(+Kartu, -Nilai) — untuk perhitungan skor
+nilai_kartu(kartu(_, J), J)       :- integer(J), !.
+nilai_kartu(kartu(_, skip),     20).
+nilai_kartu(kartu(_, reverse),  20).
+nilai_kartu(kartu(_, draw_two), 20).
+nilai_kartu(kartu(hitam, wild),           50).
+nilai_kartu(kartu(hitam, wild_draw_four), 50).

@@ -19,10 +19,61 @@
     kartu_angka/1,
     kartu_aksi/1,
     kartu_hitam/1,
-    nilai_kartu/2
+    nilai_kartu/2,
+    save_to_file/1,
+    load_from_file/1
 ]).
 
 :- use_module(declarations).
+
+save_to_file(File) :-
+    tell(File),
+    (declarations:mode(M) -> format('mode(~q).~n', [M]) ; true),
+    (declarations:urutan_pemain(U) -> format('urutan_pemain(~q).~n', [U]) ; true),
+    (declarations:giliran(G) -> format('giliran(~q).~n', [G]) ; true),
+    (declarations:arah(A) -> format('arah(~q).~n', [A]) ; true),
+    (declarations:warna_aktif(W) -> format('warna_aktif(~q).~n', [W]) ; true),
+    (declarations:discard_pile(D) -> format('discard_pile(~q).~n', [D]) ; true),
+    (declarations:draw_pile(P) -> format('draw_pile(~q).~n', [P]) ; true),
+    (declarations:last_action_card(La) -> format('last_action_card(~q).~n', [La]) ; true),
+    
+    % Hands
+    forall(declarations:tangan(P, T), format('tangan(~q, ~q).~n', [P, T])),
+    
+    % Bonus
+    forall(declarations:tim(Id, Tp), format('tim(~q, ~q).~n', [Id, Tp])),
+    forall(declarations:status_uni(Pu), format('status_uni(~q).~n', [Pu])),
+    forall(declarations:kartu_tersembunyi(Pt, Kt), format('kartu_tersembunyi(~q, ~q).~n', [Pt, Kt])),
+    
+    format('game_started.~n', []),
+    told.
+
+load_from_file(File) :-
+    open(File, read, Stream),
+    load_loop(Stream),
+    close(Stream).
+
+load_loop(Stream) :-
+    read(Stream, Term),
+    (   Term == end_of_file -> true
+    ;   assert_term(Term),
+        load_loop(Stream)
+    ).
+
+assert_term(mode(X)) :- assertz(declarations:mode(X)).
+assert_term(urutan_pemain(X)) :- assertz(declarations:urutan_pemain(X)).
+assert_term(giliran(X)) :- assertz(declarations:giliran(X)).
+assert_term(arah(X)) :- assertz(declarations:arah(X)).
+assert_term(warna_aktif(X)) :- assertz(declarations:warna_aktif(X)).
+assert_term(discard_pile(X)) :- assertz(declarations:discard_pile(X)).
+assert_term(draw_pile(X)) :- assertz(declarations:draw_pile(X)).
+assert_term(last_action_card(X)) :- assertz(declarations:last_action_card(X)).
+assert_term(tangan(P, T)) :- assertz(declarations:tangan(P, T)).
+assert_term(tim(I, L)) :- assertz(declarations:tim(I, L)).
+assert_term(status_uni(P)) :- assertz(declarations:status_uni(P)).
+assert_term(kartu_tersembunyi(P, K)) :- assertz(declarations:kartu_tersembunyi(P, K)).
+assert_term(game_started) :- assertz(declarations:game_started).
+assert_term(_) :- true. 
 
 list_length([], 0).
 list_length([_|T], N) :-
@@ -32,7 +83,6 @@ list_length([_|T], N) :-
 list_member(X, [X|_]).
 list_member(X, [_|T]) :- list_member(X, T).
 
-%% Hapus elemen pertama yang cocok
 list_remove_first(_, [], []).
 list_remove_first(X, [X|T], T) :- !.
 list_remove_first(X, [H|T], [H|R]) :-
@@ -58,7 +108,6 @@ list_nth(N, [_|T], X) :-
 list_last([X], X) :- !.
 list_last([_|T], X) :- list_last(T, X).
 
-%% Hilangkan duplikat, pertahankan urutan
 list_unique([], []).
 list_unique([H|T], [H|R]) :-
     \+ list_member(H, T), !,

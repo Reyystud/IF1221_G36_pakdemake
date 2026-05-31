@@ -1,4 +1,5 @@
 :- module(commands, [
+    intro_help/0,
     lihat_command/0,
     lihat_kartu/1,
     cek_info/0
@@ -7,6 +8,14 @@
 :- use_module(declarations).
 :- use_module(utils).
 :- use_module(library(lists)).
+
+intro_help :-
+    format('===========================================~n', []),
+    format('    Selamat Datang di Game PakdeMake!     ~n', []),
+    format('===========================================~n', []),
+    format('Gunakan "startGame." untuk memulai permainan.~n', []),
+    format('Gunakan "lihatCommand." untuk melihat bantuan.~n', []),
+    format('Selamat bermain!~n', []).
 
 lihat_command :-
     format('Aksi utama yang tersedia:~n', []),

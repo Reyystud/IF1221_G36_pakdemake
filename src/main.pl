@@ -25,7 +25,7 @@
 :- use_module(library(lists)).
 
 intro_help :-
-    commands:lihat_command.
+    commands:intro_help.
 
 :- initialization(intro_help).
 

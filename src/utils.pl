@@ -1,8 +1,3 @@
-%% =============================================================================
-%% utils.pl
-%% Fungsi pembantu: manipulasi list, pengacakan, format teks, navigasi giliran.
-%% =============================================================================
-
 :- module(utils, [
     shuffle/2,
     pick_random/3,

@@ -29,10 +29,6 @@
 
 :- use_module(declarations).
 
-%% =============================================================================
-%% Manipulasi List
-%% =============================================================================
-
 list_length([], 0).
 list_length([_|T], N) :-
     list_length(T, N1),
@@ -86,13 +82,9 @@ pick_random(List, Elem, Rest) :-
     nth0(Idx, List, Elem),
     list_remove_first(Elem, List, Rest).
 
-%% =============================================================================
-%% Navigasi Giliran
-%% =============================================================================
-
 %% next_player(+UrutanList, +Current, -Next)
 next_player(List, Current, Next) :-
-    append(Before, [Current|After], List), !,
+    append(_, [Current|After], List), !,
     (   After = [Next|_]
     ->  true
     ;   List = [Next|_]
@@ -101,22 +93,24 @@ next_player(List, Current, Next) :-
 %% prev_player(+UrutanList, +Current, -Prev)
 prev_player(List, Current, Prev) :-
     next_player(List, Prev, Current), !.
-
-%% =============================================================================
-%% Format Teks 
-%% =============================================================================
  
 %% format_kartu(+Kartu, -Teks)
+format_kartu(kartu(hitam, Jenis), Teks) :-
+    term_to_atom(Jenis, JenisAtom),
+    atomic_list_concat(['hitam-', JenisAtom], Teks), !.
 format_kartu(kartu(Warna, Jenis), Teks) :-
     term_to_atom(Jenis, JenisAtom),
     term_to_atom(Warna, WarnaAtom),
-    atomic_list_concat([WarnaAtom, ' ', JenisAtom], Teks).
- 
+    atomic_list_concat([WarnaAtom, '-', JenisAtom], Teks).
+
 %% format_list_kartu(+ListKartu, -ListTeks)
 format_list_kartu([], []).
 format_list_kartu([K|Ks], [T|Ts]) :-
     format_kartu(K, T),
     format_list_kartu(Ks, Ts).
+
+%% get_warna(+Kartu, -Warna)
+get_warna(kartu(W, _), W).
  
 %% format_urutan(+ListNama, -Teks)  contoh: "P1 - P2 - P3"
 format_urutan([N], N) :- !.
@@ -124,22 +118,18 @@ format_urutan([N|Ns], Teks) :-
     format_urutan(Ns, Rest),
     atomic_list_concat([N, ' - ', Rest], Teks).
  
-%% =============================================================================
-%% Predikat Kartu
-%% =============================================================================
- 
 warna_valid(merah).
 warna_valid(kuning).
 warna_valid(hijau).
 warna_valid(biru).
- 
+
 jenis_valid(J) :- integer(J), J >= 0, J =< 9.
 jenis_valid(skip).
 jenis_valid(reverse).
 jenis_valid(draw_two).
 jenis_valid(wild).
 jenis_valid(wild_draw_four).
- 
+
 kartu_angka(kartu(W, J)) :-
     warna_valid(W),
     integer(J),

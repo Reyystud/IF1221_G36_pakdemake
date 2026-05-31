@@ -188,9 +188,11 @@ kartu_hitam(kartu(hitam, wild_draw_four)).
 kartu_hitam(kartu(hitam, mimic)).
  
 %% nilai_kartu(+Kartu, -Nilai) — untuk perhitungan skor
+nilai_kartu(kartu(_, 0), 1)       :- !.
 nilai_kartu(kartu(_, J), J)       :- integer(J), !.
-nilai_kartu(kartu(_, skip),     20).
-nilai_kartu(kartu(_, reverse),  20).
-nilai_kartu(kartu(_, draw_two), 20).
-nilai_kartu(kartu(hitam, wild),           50).
-nilai_kartu(kartu(hitam, wild_draw_four), 50).
+nilai_kartu(kartu(_, skip),     10).
+nilai_kartu(kartu(_, reverse),  10).
+nilai_kartu(kartu(_, draw_two), 10).
+nilai_kartu(kartu(hitam, wild),           20).
+nilai_kartu(kartu(hitam, wild_draw_four), 20).
+nilai_kartu(kartu(hitam, mimic),          20).

@@ -33,7 +33,7 @@ kartu_bisa_dimainkan(Kartu, _) :-
         ;   declarations:discard_pile([Top|_]),
             Top = kartu(_, J)
         ->  true
-        ;   format('Kartu yang dipilih tidak memenuhi kriteria kesamaan warna, kesamaan jenis, dan bukan termasuk kartu wild.~n', []),
+        ;   format('Kartu tidak valid! Silakan masukkan pilihan kartu kembali.~n', []),
             fail
         )
     ), !.

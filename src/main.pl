@@ -168,14 +168,14 @@ saveGame :-
     (declarations:color_choice_pending ; declarations:can_challenge(_)), !,
     format('Tidak bisa menyimpan saat ada aksi yang harus dipilih.~n', []).
 saveGame :-
-    format('Masukkan nama file penyimpanan (akhiri dengan titik): ', []),
+    format('Masukkan nama file penyimpanan: ', []),
     read(FileBase),
     atom_concat(FileBase, '.txt', FileName),
     utils:save_to_file(FileName),
     format('Status permainan berhasil disimpan ke ~w.~n', [FileName]).
 
 loadGame :-
-    format('Masukkan nama file yang akan dimuat (akhiri dengan titik): ', []),
+    format('Masukkan nama file yang akan dimuat: ', []),
     read(FileBase),
     atom_concat(FileBase, '.txt', FileName),
     (   exists_file(FileName)
@@ -270,9 +270,20 @@ check_win(Pemain) :-
 end_game(Winner) :-
     format('~n=================================~n', []),
     format('Permainan selesai! ~w menghabiskan semua kartunya!~n', [Winner]),
-    format('~nBerikut perhitungan poin sisa kartu:~n', []),
+    format('~nBerikut perhitungan poin sisa kartu.~n', []),
     declarations:urutan_pemain(Urutan),
-    maplist(print_poin_pemain, Urutan),
+    
+    % Collect (Points, Player) pairs for ranking
+    findall(Poin-P, (member(P, Urutan), gameplay:hitung_poin(P, Poin)), PoinPairs),
+    
+    % Print details for each player
+    forall(member(P, Urutan), print_detailed_points(P)),
+    
+    % Print ranking
+    keysort(PoinPairs, SortedPairs),
+    format('~nUrutan pemenang:~n', []),
+    print_ranking(SortedPairs, 1),
+
     declarations:mode(Mode),
     (   Mode == turnamen
     ->  declarations:tim(1, Tim1), declarations:tim(2, Tim2),
@@ -289,9 +300,33 @@ poin_tim(PemainList, Total) :-
     maplist(gameplay:hitung_poin, PemainList, PoinList),
     sum_list(PoinList, Total).
 
-print_poin_pemain(P) :-
-    gameplay:hitung_poin(P, Poin),
-    format('~w: ~w poin~n', [P, Poin]).
+print_detailed_points(P) :-
+    declarations:tangan(P, Tangan),
+    (   declarations:kartu_tersembunyi(P, K)
+    ->  append(Tangan, [K], FullHand)
+    ;   FullHand = Tangan
+    ),
+    (   FullHand == []
+    ->  format('~w: kartu habis = 0 poin~n', [P])
+    ;   format_detailed_hand(FullHand, Names, PoinList, Total),
+        atomic_list_concat(Names, ' + ', NamesStr),
+        atomic_list_concat(PoinList, ' + ', PoinStr),
+        format('~w: ~w = ~w = ~w poin~n', [P, NamesStr, PoinStr, Total])
+    ).
+
+format_detailed_hand([], [], [], 0).
+format_detailed_hand([K|Ks], [Name|Names], [P_atom|PoinList], Total) :-
+    utils:format_kartu(K, Name),
+    utils:nilai_kartu(K, Val),
+    term_to_atom(Val, P_atom),
+    format_detailed_hand(Ks, Names, PoinList, Rest),
+    Total is Val + Rest.
+
+print_ranking([], _).
+print_ranking([Poin-P|Rest], Rank) :-
+    format('~w. ~w (~w poin)~n', [Rank, P, Poin]),
+    NextRank is Rank + 1,
+    print_ranking(Rest, NextRank).
 
 lihatCommand :- commands:lihat_command.
 

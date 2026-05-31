@@ -2,6 +2,10 @@
     startGame/0,
     mainkanKartu/1,
     ambilKartu/0,
+    pilihWarna/1,
+    tantang/0,
+    uni/1,
+    tangkap/1,
     lihatCommand/0,
     lihatKartu/0,
     cekInfo/0
@@ -21,10 +25,14 @@ intro_help :-
     format('Selamat datang! Perintah tersedia:~n', []),
     format('1. startGame.          - Memulai permainan baru.~n', []),
     format('2. mainkanKartu(N).    - Memainkan kartu indeks ke-N.~n', []),
-    format('3. ambilKartu.         - Mengambil 1 kartu dari deck.~n', []),
-    format('4. lihatKartu.         - Melihat kartu di tangan.~n', []),
-    format('5. cekInfo.            - Melihat status permainan.~n', []),
-    format('6. lihatCommand.       - Menampilkan bantuan ini.~n', []),
+    format('3. ambilKartu.         - Mengambil kartu (sesuai penalti jika ada).~n', []),
+    format('4. pilihWarna(W).      - Memilih warna (merah,kuning,hijau,biru).~n', []),
+    format('5. tantang.            - Menantang Wild Draw Four lawan.~n', []),
+    format('6. uni(N).             - Mainkan kartu ke-N dan serukan UNI!~n', []),
+    format('7. tangkap(P).         - Tangkap pemain P yang lupa UNI.~n', []),
+    format('8. lihatKartu.         - Melihat kartu di tangan.~n', []),
+    format('9. cekInfo.            - Melihat status permainan.~n', []),
+    format('10. lihatCommand.      - Menampilkan bantuan ini.~n', []),
     format('~nKetik "startGame." untuk memulai.~n~n', []).
 
 :- initialization(intro_help).
@@ -53,30 +61,7 @@ startGame :-
     declarations:giliran(Current),
     format('~nGiliran ~w.~n', [Current]).
 
-mainkanKartu(_) :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
-mainkanKartu(Index) :-
-    declarations:giliran(Pemain),
-    (   gameplay:mainkan_kartu_index(Pemain, Index, Kartu)
-    ->  utils:format_kartu(Kartu, Teks),
-        format('~n~w memainkan kartu: ~w.~n', [Pemain, Teks]),
-        gameplay:next_giliran(Berikutnya),
-        format('~nGiliran ~w.~n', [Berikutnya])
-    ;   true
-    ).
-
-ambilKartu :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
-ambilKartu :-
-    declarations:giliran(Pemain),
-    gameplay:ambil_kartu(Pemain, 1, [K]),
-    utils:format_kartu(K, Teks),
-    format('~n~w mendapatkan kartu: ~w.~n', [Pemain, Teks]),
-    gameplay:next_giliran(Berikutnya),
-    format('~nGiliran ~w.~n', [Berikutnya]).
-
-lihatCommand :-
-    intro_help.
+lihatCommand :- intro_help.
 
 lihatKartu :-
     \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
@@ -87,4 +72,7 @@ lihatKartu :-
 cekInfo :-
     \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
 cekInfo :-
-    commands:cek_info.
+    commands:cek_info,
+    declarations:draw_pile(Pile),
+    length(Pile, Len),
+    format('Jumlah kartu di deck: ~w~n', [Len]).

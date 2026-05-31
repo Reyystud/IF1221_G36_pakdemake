@@ -17,7 +17,7 @@ lihat_command :-
     format('3. cekInfo~n', []).
 
 lihat_kartu(Pemain) :-
-    tangan(Pemain, Tangan),
+    declarations:tangan(Pemain, Tangan),
     format('Berikut kartu yang anda miliki.~n', []),
     print_kartu_list(1, Tangan).
 
@@ -29,17 +29,19 @@ print_kartu_list(I, [K|Ks]) :-
     print_kartu_list(I1, Ks).
 
 cek_info :-
-    discard_pile([Top|_]),
+    declarations:discard_pile([Top|_]),
     utils:format_kartu(Top, TopTeks),
     format('Kartu discard top: ~w.~n', [TopTeks]),
-    urutan_pemain(Urutan),
+    declarations:urutan_pemain(Urutan),
     utils:format_urutan(Urutan, UrutanTeks),
     format('~nUrutan pemain: ~w.~n', [UrutanTeks]),
+    declarations:giliran(Giliran),
+    format('Giliran: ~w.~n', [Giliran]),
     print_pemain_info(1, Urutan).
 
 print_pemain_info(_, []) :- !.
 print_pemain_info(I, [P|Ps]) :-
-    tangan(P, Tangan),
+    declarations:tangan(P, Tangan),
     length(Tangan, Len),
     format('~nNama pemain ~w: ~w~n', [I, P]),
     format('Jumlah kartu : ~w~n', [Len]),

@@ -48,6 +48,46 @@ reverse_direction :-
     ;   assertz(declarations:arah(kanan))
     ).
 
+apply_card_effect(kartu(_, skip), _) :-
+    format('Pemain berikutnya kehilangan giliran.~n', []),
+    skip_player.
+
+apply_card_effect(kartu(_, reverse), _) :-
+    format('Arah permainan dibalik!~n', []),
+    reverse_direction.
+
+apply_card_effect(kartu(_, draw_two), _) :-
+    declarations:giliran(Current),
+    declarations:urutan_pemain(Urutan),
+    declarations:arah(Arah),
+    (   Arah == kanan
+    ->  utils:next_player(Urutan, Current, Target)
+    ;   utils:prev_player(Urutan, Current, Target)
+    ),
+    ambil_kartu(Target, 2, 'efek Draw Two', _),
+    format('~w terkena penalti Draw Two dan kehilangan giliran.~n', [Target]),
+    skip_player.
+
+apply_card_effect(kartu(hitam, wild), _) :-
+    assertz(declarations:color_choice_pending).
+
+apply_card_effect(kartu(hitam, wild_draw_four), _) :-
+    assertz(declarations:color_choice_pending),
+    assertz(declarations:can_challenge(true)).
+
+apply_card_effect(kartu(hitam, mimic), Pemain) :-
+    process_mimic(Pemain, Efek),
+    (   Efek == none
+    ->  assertz(declarations:color_choice_pending)
+    ;   true 
+    ),
+    (   \+ declarations:color_choice_pending
+    ->  assertz(declarations:color_choice_pending)
+    ;   true
+    ).
+
+apply_card_effect(kartu(_, _), _) :- !. 
+
 mainkan_kartu_index(Pemain, Index, Kartu) :-
     declarations:tangan(Pemain, Tangan),
     (   nth1(Index, Tangan, Kartu)

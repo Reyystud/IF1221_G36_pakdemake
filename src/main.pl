@@ -162,6 +162,32 @@ swapKartu(MyIdx, PartIdx) :-
     ;   format('Pertukaran gagal. Pastikan nomor urut valid dan kedua pemain memiliki > 1 kartu.~n', [])
     ).
 
+saveGame :-
+    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+saveGame :-
+    (declarations:color_choice_pending ; declarations:can_challenge(_)), !,
+    format('Tidak bisa menyimpan saat ada aksi yang harus dipilih.~n', []).
+saveGame :-
+    format('Masukkan nama file penyimpanan (akhiri dengan titik): ', []),
+    read(FileBase),
+    atom_concat(FileBase, '.txt', FileName),
+    utils:save_to_file(FileName),
+    format('Status permainan berhasil disimpan ke ~w.~n', [FileName]).
+
+loadGame :-
+    format('Masukkan nama file yang akan dimuat (akhiri dengan titik): ', []),
+    read(FileBase),
+    atom_concat(FileBase, '.txt', FileName),
+    (   exists_file(FileName)
+    ->  init:reset_game,
+        utils:load_from_file(FileName),
+        format('Status permainan berhasil dimuat dari ~w.~n', [FileName]),
+        declarations:giliran(G),
+        format('Melanjutkan giliran ~w.~n', [G]),
+        show_turn_notif(G)
+    ;   format('Gagal memuat file ~w. File tidak ditemukan.~n', [FileName])
+    ).
+
 tantang :-
     \+ declarations:can_challenge(_), !,
     format('Tidak ada tantangan yang bisa dilakukan saat ini.~n', []).

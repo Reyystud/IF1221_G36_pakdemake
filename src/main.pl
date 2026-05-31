@@ -13,6 +13,22 @@
 :- use_module(commands).
 :- use_module(utils).
 
+intro_help :-
+    format('~n=================================~n', []),
+    format('  UNI Card Game - Prolog Edition ~n', []),
+    format('  IF1221 Logika Komputasional    ~n', []),
+    format('=================================~n', []),
+    format('Selamat datang! Perintah tersedia:~n', []),
+    format('1. startGame.          - Memulai permainan baru.~n', []),
+    format('2. mainkanKartu(N).    - Memainkan kartu indeks ke-N.~n', []),
+    format('3. ambilKartu.         - Mengambil 1 kartu dari deck.~n', []),
+    format('4. lihatKartu.         - Melihat kartu di tangan.~n', []),
+    format('5. cekInfo.            - Melihat status permainan.~n', []),
+    format('6. lihatCommand.       - Menampilkan bantuan ini.~n', []),
+    format('~nKetik "startGame." untuk memulai.~n~n', []).
+
+:- initialization(intro_help).
+
 startGame :-
     init:reset_game,
     init:input_jumlah_pemain(N),
@@ -44,7 +60,6 @@ mainkanKartu(Index) :-
     (   gameplay:mainkan_kartu_index(Pemain, Index, Kartu)
     ->  utils:format_kartu(Kartu, Teks),
         format('~n~w memainkan kartu: ~w.~n', [Pemain, Teks]),
-        % Milestone 1: Pindah giliran langsung
         gameplay:next_giliran(Berikutnya),
         format('~nGiliran ~w.~n', [Berikutnya])
     ;   true
@@ -61,7 +76,7 @@ ambilKartu :-
     format('~nGiliran ~w.~n', [Berikutnya]).
 
 lihatCommand :-
-    commands:lihat_command.
+    intro_help.
 
 lihatKartu :-
     \+ declarations:game_started, !, format('Game belum dimulai.~n', []).

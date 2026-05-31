@@ -61,7 +61,59 @@ startGame :-
     declarations:giliran(Current),
     format('~nGiliran ~w.~n', [Current]).
 
-lihatCommand :- intro_help.
+mainkanKartu(Index) :-
+    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+mainkanKartu(_) :-
+    declarations:color_choice_pending, !,
+    format('Anda harus memilih warna dahulu! Gunakan pilihWarna(Warna).~n', []).
+mainkanKartu(Index) :-
+    declarations:giliran(Pemain),
+    (   gameplay:mainkan_kartu_index(Pemain, Index, Kartu)
+    ->  utils:format_kartu(Kartu, Teks),
+        format('~n~w memainkan kartu: ~w.~n', [Pemain, Teks]),
+        
+        declarations:tangan(Pemain, Tangan),
+        (   Tangan == []
+        ->  end_game(Pemain)
+        ;  
+            (   \+ declarations:color_choice_pending
+            ->  gameplay:next_giliran(Berikutnya),
+                format('~nGiliran ~w.~n', [Berikutnya]),
+                check_tantang_notif(Berikutnya)
+            ;   format('Silakan pilih warna: ', [])
+            )
+        )
+    ;   true
+    ).
+
+pilihWarna(Warna) :-
+    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+pilihWarna(_) :-
+    \+ declarations:color_choice_pending, !,
+    format('Tidak ada pemilihan warna yang tertunda.~n', []).
+pilihWarna(Warna) :-
+    utils:warna_valid(Warna), !,
+    retract(declarations:warna_aktif(_)),
+    assertz(declarations:warna_aktif(Warna)),
+    retractall(declarations:color_choice_pending),
+    format('Warna aktif sekarang: ~w.~n', [Warna]),
+    gameplay:next_giliran(Berikutnya),
+    format('~nGiliran ~w.~n', [Berikutnya]),
+    check_tantang_notif(Berikutnya).
+pilihWarna(_) :-
+    format('Warna tidak valid! Gunakan merah, kuning, hijau, atau biru.~n', []).
+
+ambilKartu :-
+    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+ambilKartu :-
+    declarations:color_choice_pending, !,
+    format('Anda harus memilih warna dahulu!~n', []).
+ambilKartu :-
+    declarations:giliran(Pemain),
+    retractall(declarations:can_challenge(_)),
+    gameplay:ambil_kartu(Pemain, 1, 'manual draw', _),
+    gameplay:next_giliran(Berikutnya),
+    format('~nGiliran ~w.~n', [Berikutnya]).
 
 lihatKartu :-
     \+ declarations:game_started, !, format('Game belum dimulai.~n', []).

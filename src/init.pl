@@ -79,3 +79,30 @@ input_nama_loop(_, _, Acc, ListNama) :-
 acak_urutan(ListNama, Shuffled) :-
     utils:shuffle(ListNama, Shuffled).
 
+bagikan_kartu([], Deck, Deck).
+bagikan_kartu([P|Ps], Deck, SisaDeck) :-
+    ambil_n(7, Deck, Tangan7, DeckSetelah),
+    assertz(declarations:tangan(P, Tangan7)),
+    bagikan_kartu(Ps, DeckSetelah, SisaDeck).
+
+ambil_n(0, Deck, [], Deck) :- !.
+ambil_n(N, [K|Rest], [K|Kartu], Sisa) :-
+    N > 0,
+    N1 is N - 1,
+    ambil_n(N1, Rest, Kartu, Sisa).
+
+inisiasi_discard_loop([K|Rest], K, Rest) :-
+    utils:kartu_angka(K), !.
+inisiasi_discard_loop([_|Rest], K, DrawPile) :-
+    inisiasi_discard_loop(Rest, K, DrawPile).
+
+inisiasi_discard(SisaDeck, KartuAwal, DrawPile) :-
+    inisiasi_discard_loop(SisaDeck, KartuAwal, DrawPile).
+
+setup_state(UrutanAcak, DrawPile, KartuAwal, WarnaAwal) :-
+    assertz(declarations:urutan_pemain(UrutanAcak)),
+    UrutanAcak = [PemainPertama|_],
+    assertz(declarations:giliran(PemainPertama)),
+    assertz(declarations:warna_aktif(WarnaAwal)),
+    assertz(declarations:draw_pile(DrawPile)),
+    assertz(declarations:discard_pile([KartuAwal])).

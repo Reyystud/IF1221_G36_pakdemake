@@ -193,6 +193,40 @@ poin_list([K|Ks], P) :-
     poin_list(Ks, Rest),
     P is Nk + Rest.
 
+godsHand_logic(triggered(Card, Source, Dest)) :-
+    random(0, 100, R),
+    R < 20,
+    declarations:urutan_pemain(Urutan),
+    member(P, Urutan),
+    declarations:tangan(P, T), length(T, L), (L > 1 ; declarations:kartu_tersembunyi(P, _)),
+    !,
+    findall(S, (member(S, Urutan), (declarations:tangan(S, Ts), length(Ts, Ls), Ls > 0)), Sources),
+    random_member(Source, Sources),
+    declarations:tangan(Source, HandS),
+    random_member(Card, HandS),
+    delete(Urutan, Source, PotentialDests),
+    random_member(Dest, PotentialDests),
+    delete(HandS, Card, NewHandS),
+    retract(declarations:tangan(Source, HandS)),
+    assertz(declarations:tangan(Source, NewHandS)),
+    declarations:tangan(Dest, HandD),
+    append(HandD, [Card], NewHandD),
+    retract(declarations:tangan(Dest, HandD)),
+    assertz(declarations:tangan(Dest, NewHandD)).
+
+godsHand_logic(failed).
+
+sembunyikan_kartu(Pemain, Index) :-
+    declarations:tangan(Pemain, Tangan),
+    length(Tangan, L), L > 1,
+    \+ declarations:kartu_tersembunyi(Pemain, _),
+    nth1(Index, Tangan, Kartu),
+    !,
+    delete_nth1(Index, Tangan, TanganBaru),
+    retract(declarations:tangan(Pemain, Tangan)),
+    assertz(declarations:tangan(Pemain, TanganBaru)),
+    assertz(declarations:kartu_tersembunyi(Pemain, Kartu)).
+
 tampilkan_kartu(Pemain) :-
     declarations:kartu_tersembunyi(Pemain, Kartu),
     !,

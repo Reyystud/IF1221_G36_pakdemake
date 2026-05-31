@@ -20,16 +20,24 @@
 :- use_module(utils).
 :- use_module(library(lists)).
 
-kartu_bisa_dimainkan(kartu(hitam, _), _) :-
-    declarations:discard_pile([Top|_]),
-    (   utils:kartu_hitam(Top)
-    ->  format('Kesalahan: Tidak bisa mengeluarkan kartu hitam di atas kartu hitam!~n', []), fail
-    ;   true
+kartu_bisa_dimainkan(Kartu, _) :-
+    (   Kartu = kartu(hitam, _)
+    ->  declarations:discard_pile([Top|_]),
+        (   utils:kartu_hitam(Top)
+        ->  format('~nKesalahan: Tidak bisa mengeluarkan kartu hitam di atas kartu hitam!~n', []), fail
+        ;   true
+        )
+    ;   Kartu = kartu(W, J),
+        (   declarations:warna_aktif(W)
+        ->  true
+        ;   declarations:discard_pile([Top|_]),
+            Top = kartu(_, J)
+        ->  true
+        ;   format('~nAlur Tidak Valid - Aturan Kartu Tidak Cocok~n', []),
+            format('Kartu yang dipilih tidak memenuhi kriteria kesamaan warna, kesamaan jenis, dan bukan termasuk kartu wild.~n', []),
+            fail
+        )
     ), !.
-kartu_bisa_dimainkan(kartu(W, _), cocok_warna) :-
-    declarations:warna_aktif(W), !.
-kartu_bisa_dimainkan(kartu(_, J), cocok_jenis) :-
-    declarations:discard_pile([kartu(_, J)|_]), !.
 
 next_giliran(Berikutnya) :-
     declarations:giliran(Current),

@@ -62,7 +62,7 @@ startGame :-
     show_turn_notif(Current).
 
 mainkanKartu(Index) :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 mainkanKartu(_) :-
     declarations:color_choice_pending, !,
     format('Anda harus memilih warna dahulu! Gunakan pilihWarna(Warna).~n', []).
@@ -76,7 +76,7 @@ mainkanKartu(Index) :-
     ).
 
 pilihWarna(Warna) :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 pilihWarna(_) :-
     \+ declarations:color_choice_pending, !,
     format('Tidak ada pemilihan warna yang tertunda.~n', []).
@@ -93,7 +93,7 @@ pilihWarna(_) :-
     format('Warna tidak valid! Gunakan merah, kuning, hijau, atau biru.~n', []).
 
 ambilKartu :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 ambilKartu :-
     declarations:color_choice_pending, !,
     format('Anda harus memilih warna dahulu!~n', []).
@@ -106,7 +106,7 @@ ambilKartu :-
     show_turn_notif(Berikutnya).
 
 godsHand :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 godsHand :-
     declarations:color_choice_pending, !, format('Selesaikan pemilihan warna dahulu.~n', []).
 godsHand :-
@@ -122,7 +122,7 @@ godsHand :-
     show_turn_notif(Berikutnya).
 
 sembunyikanKartu(Index) :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 sembunyikanKartu(Index) :-
     declarations:giliran(Pemain),
     (   gameplay:sembunyikan_kartu(Pemain, Index)
@@ -133,7 +133,7 @@ sembunyikanKartu(Index) :-
     ).
 
 tampilkanKartu :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 tampilkanKartu :-
     declarations:giliran(Pemain),
     (   gameplay:tampilkan_kartu(Pemain)
@@ -142,7 +142,7 @@ tampilkanKartu :-
     ).
 
 swapKartu(MyIdx, PartIdx) :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 swapKartu(_, _) :-
     declarations:mode(Mode), Mode \= turnamen, !,
     format('Perintah ini hanya tersedia di Mode Turnamen.~n', []).
@@ -163,7 +163,7 @@ swapKartu(MyIdx, PartIdx) :-
     ).
 
 saveGame :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 saveGame :-
     (declarations:color_choice_pending ; declarations:can_challenge(_)), !,
     format('Tidak bisa menyimpan saat ada aksi yang harus dipilih.~n', []).
@@ -296,13 +296,13 @@ print_poin_pemain(P) :-
 lihatCommand :- commands:lihat_command.
 
 lihatKartu :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 lihatKartu :-
     declarations:giliran(Pemain),
     commands:lihat_kartu(Pemain).
 
 cekInfo :-
-    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+    \+ declarations:game_started, !, format('Game belum dimulai. Ketik startGame untuk memulai.~n', []).
 cekInfo :-
     commands:cek_info,
     declarations:draw_pile(Pile),

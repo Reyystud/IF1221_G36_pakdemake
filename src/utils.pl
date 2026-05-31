@@ -185,6 +185,7 @@ kartu_aksi(kartu(W, draw_two)) :- warna_valid(W).
  
 kartu_hitam(kartu(hitam, wild)).
 kartu_hitam(kartu(hitam, wild_draw_four)).
+kartu_hitam(kartu(hitam, mimic)).
  
 %% nilai_kartu(+Kartu, -Nilai) — untuk perhitungan skor
 nilai_kartu(kartu(_, J), J)       :- integer(J), !.

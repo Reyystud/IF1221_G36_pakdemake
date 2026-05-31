@@ -77,7 +77,7 @@ input_mode(Mode) :-
 input_jumlah_pemain(Mode, N) :-
     (   Mode == turnamen
     ->  N = 4, format('Mode turnamen memerlukan 4 pemain.~n', [])
-    ;   format('Masukkan jumlah pemain (2-4, akhiri dengan titik): ', []),
+    ;   format('Masukkan jumlah pemain: ', []),
         read(Input),
         (   integer(Input), Input >= 2, Input =< 4
         ->  N = Input
@@ -91,13 +91,13 @@ input_nama_pemain(N, ListNama) :-
 
 input_nama_loop(I, N, Acc, ListNama) :-
     I =< N, !,
-    format('Masukkan nama pemain ~w (akhiri dengan titik, gunakan petik jika kapital\'\'.): ', [I]),
+    format('Masukkan nama pemain ~w.: ', [I]),
     read(Nama),
     (   atom(Nama), \+ utils:list_member(Nama, Acc)
     ->  I1 is I + 1,
         input_nama_loop(I1, N, [Nama|Acc], ListNama)
     ;   (   \+ atom(Nama)
-        ->  format('Nama tidak valid (gunakan huruf kecil atau tanda petik, akhiri dengan titik).~n', [])
+        ->  format('Nama tidak valid.~n', [])
         ;   format('Nama sudah digunakan. Masukkan nama lain.~n', [])
         ),
         input_nama_loop(I, N, Acc, ListNama)
@@ -111,7 +111,7 @@ acak_urutan(ListNama, Shuffled) :-
 setup_teams(ListNama, [Tim1, Tim2]) :-
     utils:shuffle(ListNama, Shuffled),
     Tim1 = [P1, P2], Tim2 = [P3, P4],
-    append(Tim1, [], Tim1), % Just to bind
+    append(Tim1, [], Tim1),
     append(Tim2, [], Tim2),
     Shuffled = [P1, P2, P3, P4],
     assertz(declarations:tim(1, Tim1)),

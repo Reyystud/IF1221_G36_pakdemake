@@ -28,10 +28,11 @@ lihat_command :-
     format('3. tampilkanKartu.     - Munculkan kartu tersembunyi.~n', []),
     
     (   declarations:mode(turnamen)
-    ->  format('11. swapKartu(N, M).   - [BONUS] Tukar kartu dengan teman tim.~n', [])
+    ->  format('11. swapKartu(N, M).   - Tukar kartu dengan teman tim.~n', [])
     ;   true
     ),
     
+    format('~n Aksi terkait Game yang tersedia:~n', []),
     format('1. saveGame.          - Simpan kondisi permainan.~n', []),
     format('2. loadGame.          - Muat kondisi permainan.~n', []),
     

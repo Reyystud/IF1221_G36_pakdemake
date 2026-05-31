@@ -37,3 +37,39 @@ startGame :-
     declarations:giliran(Current),
     format('~nGiliran ~w.~n', [Current]).
 
+mainkanKartu(_) :-
+    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+mainkanKartu(Index) :-
+    declarations:giliran(Pemain),
+    (   gameplay:mainkan_kartu_index(Pemain, Index, Kartu)
+    ->  utils:format_kartu(Kartu, Teks),
+        format('~n~w memainkan kartu: ~w.~n', [Pemain, Teks]),
+        % Milestone 1: Pindah giliran langsung
+        gameplay:next_giliran(Berikutnya),
+        format('~nGiliran ~w.~n', [Berikutnya])
+    ;   true
+    ).
+
+ambilKartu :-
+    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+ambilKartu :-
+    declarations:giliran(Pemain),
+    gameplay:ambil_kartu(Pemain, 1, [K]),
+    utils:format_kartu(K, Teks),
+    format('~n~w mendapatkan kartu: ~w.~n', [Pemain, Teks]),
+    gameplay:next_giliran(Berikutnya),
+    format('~nGiliran ~w.~n', [Berikutnya]).
+
+lihatCommand :-
+    commands:lihat_command.
+
+lihatKartu :-
+    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+lihatKartu :-
+    declarations:giliran(Pemain),
+    commands:lihat_kartu(Pemain).
+
+cekInfo :-
+    \+ declarations:game_started, !, format('Game belum dimulai.~n', []).
+cekInfo :-
+    commands:cek_info.

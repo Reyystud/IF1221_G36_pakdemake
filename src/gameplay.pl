@@ -88,6 +88,27 @@ apply_card_effect(kartu(hitam, mimic), Pemain) :-
 
 apply_card_effect(kartu(_, _), _) :- !. 
 
+process_mimic(Pemain, copied) :-
+    declarations:discard_pile([_|History]),
+    find_last_action(History, LastAction),
+    !,
+    utils:format_kartu(LastAction, Teks),
+    format('Menelusuri riwayat permainan...~n', []),
+    format('Kartu aksi terakhir yang dimainkan: ~w.~n', [Teks]),
+    format('Kartu mimic menyalin efek ~w!~n', [Teks]),
+    apply_card_effect(LastAction, Pemain).
+
+process_mimic(_, none) :-
+    format('Menelusuri riwayat permainan...~n', []),
+    format('Tidak ditemukan kartu aksi sebelumnya. Mimic berlaku sebagai Wild.~n', []).
+
+find_last_action([K|_], K) :-
+    utils:kartu_aksi(K), !.
+find_last_action([K|_], K) :-
+    utils:kartu_hitam(K), K \= kartu(hitam, mimic), !.
+find_last_action([_|T], K) :-
+    find_last_action(T, K).
+
 mainkan_kartu_index(Pemain, Index, Kartu) :-
     declarations:tangan(Pemain, Tangan),
     (   nth1(Index, Tangan, Kartu)

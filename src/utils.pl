@@ -27,26 +27,30 @@
 :- use_module(declarations).
 
 save_to_file(File) :-
-    tell(File),
-    (declarations:mode(M) -> format('mode(~q).~n', [M]) ; true),
-    (declarations:urutan_pemain(U) -> format('urutan_pemain(~q).~n', [U]) ; true),
-    (declarations:giliran(G) -> format('giliran(~q).~n', [G]) ; true),
-    (declarations:arah(A) -> format('arah(~q).~n', [A]) ; true),
-    (declarations:warna_aktif(W) -> format('warna_aktif(~q).~n', [W]) ; true),
-    (declarations:discard_pile(D) -> format('discard_pile(~q).~n', [D]) ; true),
-    (declarations:draw_pile(P) -> format('draw_pile(~q).~n', [P]) ; true),
-    (declarations:last_action_card(La) -> format('last_action_card(~q).~n', [La]) ; true),
+    open(File, write, Stream),
+    (declarations:mode(M) -> format(Stream, 'mode(~q).~n', [M]) ; true),
+    (declarations:urutan_pemain(U) -> format(Stream, 'urutan_pemain(~q).~n', [U]) ; true),
+    (declarations:giliran(G) -> format(Stream, 'giliran(~q).~n', [G]) ; true),
+    (declarations:arah(A) -> format(Stream, 'arah(~q).~n', [A]) ; true),
+    (declarations:warna_aktif(W) -> format(Stream, 'warna_aktif(~q).~n', [W]) ; true),
+    (declarations:discard_pile(D) -> format(Stream, 'discard_pile(~q).~n', [D]) ; true),
+    (declarations:draw_pile(P) -> format(Stream, 'draw_pile(~q).~n', [P]) ; true),
+    (declarations:pending_draw(Pd) -> format(Stream, 'pending_draw(~q).~n', [Pd]) ; true),
+    (declarations:last_action_card(La) -> format(Stream, 'last_action_card(~q).~n', [La]) ; true),
+    (declarations:swap_used -> format(Stream, 'swap_used.~n', []) ; true),
+    (declarations:color_choice_pending -> format(Stream, 'color_choice_pending.~n', []) ; true),
     
     % Hands
-    forall(declarations:tangan(P, T), format('tangan(~q, ~q).~n', [P, T])),
+    forall(declarations:tangan(P, T), format(Stream, 'tangan(~q, ~q).~n', [P, T])),
     
     % Bonus
-    forall(declarations:tim(Id, Tp), format('tim(~q, ~q).~n', [Id, Tp])),
-    forall(declarations:status_uni(Pu), format('status_uni(~q).~n', [Pu])),
-    forall(declarations:kartu_tersembunyi(Pt, Kt), format('kartu_tersembunyi(~q, ~q).~n', [Pt, Kt])),
+    forall(declarations:tim(Id, Tp), format(Stream, 'tim(~q, ~q).~n', [Id, Tp])),
+    forall(declarations:status_uni(Pu), format(Stream, 'status_uni(~q).~n', [Pu])),
+    forall(declarations:kartu_tersembunyi(Pt, Kt), format(Stream, 'kartu_tersembunyi(~q, ~q).~n', [Pt, Kt])),
+    forall(declarations:can_challenge(Cc), format(Stream, 'can_challenge(~q).~n', [Cc])),
     
-    format('game_started.~n', []),
-    told.
+    format(Stream, 'game_started.~n', []),
+    close(Stream).
 
 load_from_file(File) :-
     open(File, read, Stream),
@@ -67,11 +71,15 @@ assert_term(arah(X)) :- assertz(declarations:arah(X)).
 assert_term(warna_aktif(X)) :- assertz(declarations:warna_aktif(X)).
 assert_term(discard_pile(X)) :- assertz(declarations:discard_pile(X)).
 assert_term(draw_pile(X)) :- assertz(declarations:draw_pile(X)).
+assert_term(pending_draw(X)) :- assertz(declarations:pending_draw(X)).
 assert_term(last_action_card(X)) :- assertz(declarations:last_action_card(X)).
 assert_term(tangan(P, T)) :- assertz(declarations:tangan(P, T)).
 assert_term(tim(I, L)) :- assertz(declarations:tim(I, L)).
 assert_term(status_uni(P)) :- assertz(declarations:status_uni(P)).
 assert_term(kartu_tersembunyi(P, K)) :- assertz(declarations:kartu_tersembunyi(P, K)).
+assert_term(can_challenge(X)) :- assertz(declarations:can_challenge(X)).
+assert_term(swap_used) :- assertz(declarations:swap_used).
+assert_term(color_choice_pending) :- assertz(declarations:color_choice_pending).
 assert_term(game_started) :- assertz(declarations:game_started).
 assert_term(_) :- true. 
 

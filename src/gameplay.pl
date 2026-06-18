@@ -183,8 +183,8 @@ recycle_deck :-
     utils:shuffle(Bekas, Shuffled),
     retract(declarations:discard_pile(_)),
     assertz(declarations:discard_pile([Top])),
-    retract(draw_pile(_)),
-    assertz(draw_pile(Shuffled)).
+    retract(declarations:draw_pile(_)),
+    assertz(declarations:draw_pile(Shuffled)).
 
 hitung_poin(Pemain, Poin) :-
     declarations:tangan(Pemain, Tangan),
